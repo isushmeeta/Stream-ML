@@ -44,6 +44,18 @@
 | Broker recovery time | < 15 seconds |
 | Min brokers needed for writes | 2 of 3 (MIN_INSYNC_REPLICAS) |
 
+## Screenshots
+
+### Kafka Cluster — 3 brokers, 159/159 in-sync replicas
+![Brokers](docs/screenshots/phase2-kafka-ui-brokers.png)
+
+### Topic: transactions — 3 partitions, replication factor 3
+![Topics](docs/screenshots/phase2-kafka-ui-topics.png)
+
+### Fault tolerance — broker killed mid-stream, zero message loss
+![Fault tolerance](docs/screenshots/phase2-fault-tolerance.png)
+
+
 ## Running Locally
 ```bash
 # Start Kafka cluster
@@ -59,8 +71,9 @@ python producer/producer.py
 open http://localhost:8080
 ```
 
-## Project Structure
 
+## Project Structure
+```
 streamml/
 ├── docker-compose.yml      # 3-broker Kafka + UI
 ├── producer/
@@ -68,7 +81,7 @@ streamml/
 ├── consumer/
 │   └── consumer.py         # Fault-isolated consumer
 └── README.md
-
+```    
 
 
 
