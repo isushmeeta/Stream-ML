@@ -4,13 +4,13 @@
 > Target: 50k predictions/sec | <10ms p99 latency | <15s node recovery
 
 ## Architecture
-
+```
 [Producer] → [Kafka: 3 brokers] → [Consumer Workers]
 ↓
 [ML Inference] (Phase 4)
 ↓
 [FastAPI + Monitoring] (Phase 5-6)
-
+```
 
 ## Stack
 - **Messaging:** Apache Kafka (KRaft mode, 3 brokers)

@@ -19,7 +19,7 @@ try:
         msg = consumer.poll(timeout=1.0)
 
         if msg is None:
-            print(".", end="", flush=True)  # ← prints a dot every second so you know it's alive
+            print(".", end="", flush=True)  # prints a dot every second so to show it's alive
             continue
 
         if msg.error():

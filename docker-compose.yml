@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
 
-  # ── Kafka Broker 1 ──────────────────────────────────────
+  # ── Kafka Broker 1 ────────────
   kafka-1:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka-1
@@ -17,14 +17,14 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-1:29093,2@kafka-2:29093,3@kafka-3:29093
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3     # ← replicate across all 3 brokers
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3     # replicate across all 3 brokers
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3
-      KAFKA_MIN_INSYNC_REPLICAS: 2                  # ← need 2/3 brokers alive to write
+      KAFKA_MIN_INSYNC_REPLICAS: 2                  # need 2/3 brokers alive to write
       CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qg"
     volumes:
       - kafka-1-data:/var/lib/kafka/data
 
-  # ── Kafka Broker 2 ──────────────────────────────────────
+  # ── Kafka Broker 2 ───────────────────
   kafka-2:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka-2
@@ -46,7 +46,7 @@ services:
     volumes:
       - kafka-2-data:/var/lib/kafka/data
 
-  # ── Kafka Broker 3 ──────────────────────────────────────
+  # ── Kafka Broker 3 ───────────
   kafka-3:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka-3
@@ -68,7 +68,7 @@ services:
     volumes:
       - kafka-3-data:/var/lib/kafka/data
 
-  # ── Kafka UI (so you can see everything visually) ───────
+  # Kafka UI 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
