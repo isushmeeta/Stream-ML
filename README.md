@@ -7,9 +7,9 @@
 ```
 [Producer] → [Kafka: 3 brokers] → [Consumer Workers]
 ↓
-[ML Inference] (Phase 4)
+[ML Inference] 
 ↓
-[FastAPI + Monitoring] (Phase 5-6)
+[FastAPI + Monitoring] 
 ```
 
 ## Stack
@@ -23,7 +23,7 @@
 ## Phases
 - [x] Phase 1 — Parallelism & concurrency fundamentals
 - [x] Phase 2 — 3-broker Kafka cluster with fault tolerance
-- [ ] Phase 3 — Spark streaming feature pipeline
+- [x]  Phase 3 — Spark streaming feature pipeline
 - [ ] Phase 4 — Ray distributed ML workers
 - [ ] Phase 5 — FastAPI + load balancer
 - [ ] Phase 6 — Prometheus + Grafana monitoring
@@ -54,6 +54,21 @@
 
 ### Fault tolerance — broker killed mid-stream, zero message loss
 ![Fault tolerance](docs/screenshots/phase2-fault-tolerance.png)
+
+## Phase 3 — What was built
+- Spark Structured Streaming pipeline consuming Kafka `transactions` topic
+- Windowed feature computation: 10-minute sliding window, 2-minute slide
+- Features computed per user: `txn_count_10min`, `avg_amount_10min`, `max_amount_10min`, `min_amount_10min`
+- Fraud signal identified: users with high txn_count + high avg_amount in short windows
+- Runs locally with `local[*]` master using manually downloaded Kafka connector JARs
+
+## Phase 3 Screenshots
+
+### Spark computing user features from live Kafka stream
+![Spark features](docs/screenshots/phase3-spark-features-batch.png)
+
+### Producer + Spark pipeline running side by side
+![Side by side](docs/screenshots/phase3-producer-spark-side-by-side.png)
 
 
 ## Running Locally

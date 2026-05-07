@@ -1,3 +1,9 @@
+import os
+
+os.environ["HADOOP_HOME"] = "C:\\hadoop"
+os.environ["PATH"] = os.environ["PATH"] + ";C:\\hadoop\\bin"
+os.environ["JAVA_HOME"] = "C:\\Users\\User\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-11.0.30.7-hotspot"
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import (
     from_json,col, avg,count,max,min,
@@ -8,12 +14,14 @@ from pyspark.sql.types import (
     StructType, StructField, StringType,DoubleType, LongType
 )
 
+
 spark = SparkSession.builder \
     .appName("StreamML-Featureieline") \
-    .master("spark://localhost:7077") \
-    .config ("spark.jars.ackages","org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0")\
+    .master("local[*]") \
+    .config("spark.jars", "spark-kafka.jar,kafka-clients.jar,spark-token-provider.jar,commons-pool2.jar") \
+    .config("spark.sql.shuffle.partitions","3")\
     .getOrCreate() 
-spark.sparkContext.setLogLevel('Warn')  #reduce noise
+spark.sparkContext.setLogLevel('WARN')  #reduce noise
 
 transaction_schema = StructType([
     StructField("transaction_id", StringType()),
