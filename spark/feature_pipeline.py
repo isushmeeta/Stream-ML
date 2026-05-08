@@ -18,7 +18,7 @@ from pyspark.sql.types import (
 spark = SparkSession.builder \
     .appName("StreamML-Featureieline") \
     .master("local[*]") \
-    .config("spark.jars", "spark-kafka.jar,kafka-clients.jar,spark-token-provider.jar,commons-pool2.jar") \
+    .config("spark.jars", "jars/spark-kafka.jar,jars/kafka-clients.jar,jars/spark-token-provider.jar,jars/commons-pool2.jar") \
     .config("spark.sql.shuffle.partitions","3")\
     .getOrCreate() 
 spark.sparkContext.setLogLevel('WARN')  #reduce noise
