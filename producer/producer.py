@@ -13,11 +13,34 @@ producer = Producer({
 def generate_transaction():
     """Simulate a fraud detection event"""
     return {
+        #                -------for synthetic data training------
+        #'transaction_id': f"txn_{random.randint(10000, 99999)}",
+        #'user_id': f"user_{random.randint(1, 1000)}",
+        #'amount': round(random.uniform(1.0, 5000.0), 2),
+        #'merchant': random.choice(['amazon', 'netflix', 'random_casino', 'grocery_store']),
+        #'timestamp': time.time() 
+        #                   --------------------------------
+        # for IEEE Data                      
         'transaction_id': f"txn_{random.randint(10000, 99999)}",
-        'user_id': f"user_{random.randint(1, 1000)}",
-        'amount': round(random.uniform(1.0, 5000.0), 2),
-        'merchant': random.choice(['amazon', 'netflix', 'random_casino', 'grocery_store']),
-        'timestamp': time.time()
+        'user_id':        f"user_{random.randint(1, 1000)}",
+        'amount':         round(random.uniform(1.0, 5000.0), 2),
+        'merchant':       random.choice(['amazon', 'netflix', 'random_casino', 'grocery_store']),
+        'timestamp':      time.time(),
+        'card1':  random.randint(100, 9999),
+        'card2':  random.randint(100, 600),
+        'card3':  random.randint(100, 200),
+        'card5':  random.randint(100, 200),
+        'addr1':  random.randint(100, 500),
+        'addr2':  random.randint(1, 100),
+        'C1':     random.randint(0, 10),
+        'C2':     random.randint(0, 10),
+        'C6':     random.randint(0, 10),
+        'C11':    random.randint(0, 10),
+        'C13':    random.randint(0, 30),
+        'C14':    random.randint(0, 10),
+        'D1':     random.randint(0, 500),
+        'D10':    random.randint(0, 500),
+        'D15':    random.randint(0, 500),
     }
 
 def delivery_report(err, msg):
