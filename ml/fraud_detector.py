@@ -4,6 +4,7 @@ import joblib
 import json
 import time
 import numpy as np
+import pandas as pd
 from confluent_kafka import Consumer, KafkaError
 from ray.exceptions import RayActorError
 
@@ -42,9 +43,32 @@ class FraudDetectorWorker:
             'D1': transaction.get('D1',  -999),
             'D10': transaction.get('D10', -999),
             'D15': transaction.get('D15', -999),
+            'TransactionDT': transaction.get('timestamp', 0),
+            'card4': transaction.get('card4', -999),
+            'card6': transaction.get('card6', -999),
+            'dist1': transaction.get('dist1', -999),
+            'dist2': transaction.get('dist2', -999),
+            'P_emaildomain': transaction.get('P_emaildomain', -999),
+            'R_emaildomain': transaction.get('R_emaildomain', -999),
+            'C3': transaction.get('C3', -999),
+            'C4': transaction.get('C4', -999),
+            'C5': transaction.get('C5', -999),
+            'C7': transaction.get('C7', -999),
+            'C8': transaction.get('C8', -999),
+            'C9': transaction.get('C9', -999),
+            'C10': transaction.get('C10', -999),
+            'D2': transaction.get('D2', -999),
+            'D3': transaction.get('D3', -999),
+            'D4': transaction.get('D4', -999),
+            'D5': transaction.get('D5', -999),
+            'D6': transaction.get('D6', -999),
+            'D11': transaction.get('D11', -999),
 
         }
-        X=np.array([[features[col] for col in self.feature_cols]])
+        features['amt_log'] = np.log1p(features['TransactionAmt'])
+        features['hour'] = (features['TransactionDT'] / 3600) % 24
+        features['day']  = (features['TransactionDT'] / (3600 * 24)) % 7
+        X = pd.DataFrame([features])[self.feature_cols]
         fraud_prob=self.model.predict_proba(X)[0][1]
         is_fraud=fraud_prob> 0.5 
         latency_ms=(time.time()-start)*1000

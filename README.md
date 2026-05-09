@@ -24,7 +24,7 @@
 - [x] Phase 1 — Parallelism & concurrency fundamentals
 - [x] Phase 2 — 3-broker Kafka cluster with fault tolerance
 - [x]  Phase 3 — Spark streaming feature pipeline
-- [ ] Phase 4 — Ray distributed ML workers
+- [x] Phase 4 — Ray distributed ML workers
 - [ ] Phase 5 — FastAPI + load balancer
 - [ ] Phase 6 — Prometheus + Grafana monitoring
 - [ ] Phase 7 — Kubernetes deployment
@@ -70,6 +70,42 @@
 ### Producer + Spark pipeline running side by side
 ![Side by side](docs/screenshots/phase3-producer-spark-side-by-side.png)
 
+## Phase 4 — What was built
+- 3 Ray actor workers, each loading XGBoost fraud model once into RAM
+- Real dataset: 590,540 IEEE-CIS transactions, 3.5% fraud rate
+- **Model upgraded:** Random Forest → XGBoost with feature engineering
+- 35 features including time encoding, log transforms, card metadata
+- **AUC-ROC: 0.9343** | Recall: 0.82 | Precision: 0.23
+- Avg inference latency: 29-41ms on laptop
+- Fault tolerance: worker crash detected, Kafka offset uncommitted, auto-reprocessed
+- FRAUD ALERT triggered for transactions with fraud_probability > 0.5
+
+## Phase 4 — Model Improvement Journey
+| Version | Model | Features | AUC-ROC | Recall |
+|---|---|---|---|---|
+| v1 | Random Forest | 15 raw | 0.8805 | 0.30 |
+| v2 | Random Forest + balanced | 15 raw | 0.8923 | 0.69 |
+| v3 | XGBoost + engineering | 35 features | 0.9343 | 0.82 |
+
+## Phase 4 Numbers
+| Metric | Value |
+|---|---|
+| Training dataset | 590,540 real transactions |
+| Fraud rate | 3.5% |
+| AUC-ROC | 0.9343 |
+| Recall (fraud) | 0.82 |
+| Ray workers | 3 actors |
+| Avg latency (laptop) | ~30ms |
+| Model load strategy | Once per actor at startup |
+
+## Phase 4 Screenshots
+
+### XGBoost model performance — AUC 0.9343
+![Model performance](docs/screenshots/phase4-xgboost-model-performance.png)
+
+### Ray workers + producer — fraud alerts in real time
+![Both terminals](docs/screenshots/phase4-ray-both-terminals.png)
+
 
 ## Running Locally
 ```bash
@@ -95,6 +131,17 @@ streamml/
 │   └── producer.py         # Transaction event generator
 ├── consumer/
 │   └── consumer.py         # Fault-isolated consumer
+├── spark/
+│   └── feature_pipeline.py
+├── ml/
+│   ├── fraud_detector.py
+│   ├── train_model.py
+│   ├── train_modelSYN.py
+│   └── models/
+├── jars/
+└── docs/
+    ├── TROUBLESHOOTING.md
+    └── screenshots/
 └── README.md
 ```    
 
