@@ -111,6 +111,13 @@ services:
       - SPARK_WORKER_CORES=1
     depends_on:
       - spark-master 
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb -policy allkeys-lru     
 volumes:
   kafka-1-data:
   kafka-2-data:
