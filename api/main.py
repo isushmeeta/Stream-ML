@@ -126,9 +126,13 @@ async def lifespan(app: FastAPI):
 
 
     #redis connection build
-    redis_client=redis.Redis(host='localhost', port=6379,db=0)
-    redis_client.ping()
-    logger.info("Redis Conneected")
+    redis_client=redis.Redis(host='127.0.0.1', port=6379,db=0, socket_connect_timeout=5)
+    try:
+        redis_client.ping()
+        logger.info("Redis Conneected")
+    except Exception as e:
+        logger.warning(f"Redis unavailable - running without cache ")
+        redis_client = None
 
     #kafka producer for async logging
 
@@ -245,7 +249,7 @@ async def predict(
 
     # Check Redis cache first
     cache_key = f"pred:{transaction.transaction_id}"
-    cached = redis_client.get(cache_key)
+    cached = redis_client.get(cache_key) if redis_client else None
     if cached:
         result = json.loads(cached)
         result['cached'] = True
@@ -281,7 +285,8 @@ async def predict(
     }
 
     #cache in redis for 5 minutes
-    redis_client.setex(cache_key, 300, json.dumps(result))
+    if redis_client :
+        redis_client.setex(cache_key, 300, json.dumps(result))
 
     #Log to Kafka asynchronously — doesn't block response
     background_tasks.add_task(log_to_kafka, result)
