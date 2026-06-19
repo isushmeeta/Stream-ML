@@ -95,7 +95,7 @@ class FraudDetectorWorker:
         self.total_latency += latency_ms
 
         return{
-            'fraud_probabilty': round(float(fraud_prob),4),
+            'fraud_probability': round(float(fraud_prob),4),
             'is_fraud': is_fraud,
             'latency_ms':round(latency_ms,2),
             'worker_id': self.worker_id,
@@ -250,6 +250,7 @@ async def predict(
     # Check Redis cache first
     cache_key = f"pred:{transaction.transaction_id}"
     cached = redis_client.get(cache_key) if redis_client else None
+
     if cached:
         result = json.loads(cached)
         result['cached'] = True
