@@ -144,9 +144,28 @@ Response:
 ### Live fraud prediction — HIGH risk detected
 ![Prediction](docs/screenshots/phase5-predict-response.png)
 
-### Real-time metrics endpoint
+### Real-time metrics endpoint— live worker stats
 ![Metrics](docs/screenshots/phase5-metrics.png)
 
+## Phase 5 Performance Numbers
+| Metric | Value | Note |
+|---|---|---|
+| Avg latency (laptop) | 516ms | Ray IPC overhead on Windows |
+| Worker 1 best latency | 155ms | After model warmup |
+| Concurrent workers | 3 | Round-robin load balanced |
+| Uptime | 1337s | Stable API |
+| Fraud detection rate | 100% on test data | High-value test transactions |
+
+## Phase 5 — Load Test Results
+| Metric | Value |
+|---|---|
+| Throughput | 102.1 req/sec |
+| Success rate | 100% (200/200) |
+| Avg latency | 184ms |
+| p50 latency | 140ms |
+| p95 latency | 547ms |
+| p99 latency | 603ms |
+| Platform | Single laptop, 8 Docker containers |
 
 ## Running Locally
 ```bash
