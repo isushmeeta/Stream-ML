@@ -19,6 +19,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import uvicorn
 from confluent_kafka import Producer
+from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_client import Counter, Histogram, Gauge
 
 os.environ["HADOOP_HOME"]= "C:\\hadoop"
 os.environ["PATH"]=os.environ["PATH"]+";C:\\hadoop\\bin"
@@ -40,6 +42,8 @@ class FraudDetectorWorker:
 
     def predict(self, transaction:dict) -> dict:
         start =time.time()
+        
+               
 
         features ={
             'TransactionAmt': transaction.get('amount',0),
@@ -114,6 +118,13 @@ request_count=0
 fraud_count=0
 latencies=[]
 start_time=time.time()
+start_time = time.time()
+
+PREDICTIONS_TOTAL = Counter('streamml_predictions_total', 'Total predictions made')
+FRAUD_DETECTED = Counter('streamml_fraud_detected_total', 'Total fraud detected')
+INFERENCE_LATENCY = Histogram('streamml_inference_latency_ms', 'Inference latency ms',
+    buckets=[10, 25, 50, 100, 250, 500, 1000, 2500, 5000])
+ACTIVE_WORKERS = Gauge('streamml_active_workers', 'Active Ray workers')
 
 
 @asynccontextmanager
@@ -161,7 +172,7 @@ app.add_middleware(
     allow_headers=["*"],
 
 )
-
+Instrumentator().instrument(app).expose(app, endpoint="/metrics/prometheus")
 #request and response 
 class TransactionRequest(BaseModel):
     transaction_id: str = Field(default_factory=lambda: f"txn_{uuid.uuid4().hex[:8]}")
@@ -284,7 +295,12 @@ async def predict(
         'cached':            False,
         'timestamp':         time.time(),
     }
-
+    PREDICTIONS_TOTAL.inc()
+    INFERENCE_LATENCY.observe(result['latency_ms'])
+    if result['is_fraud']:
+        FRAUD_DETECTED.inc()
+    ACTIVE_WORKERS.set(len(workers))
+    
     #cache in redis for 5 minutes
     if redis_client :
         redis_client.setex(cache_key, 300, json.dumps(result))
